@@ -96,7 +96,7 @@ public class Users {
      * @param id the Users’s id to search for 
      *  
     ************************************************/
-    public void getUser(String username, String password){
+    public Boolean getUser(String username, String password){
          try{
             
             Class.forName("com.mysql.jdbc.Driver");
@@ -105,7 +105,7 @@ public class Users {
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/client_schedule", "sqlUser", "Passw0rd!");
             Statement stmt = con.createStatement();
            
-            String sql = "select * from Users WHERE User_Name = '" + username + "' AND Password = '" + password +"' ;";
+            String sql = "select * from Users WHERE User_Name = '" + username + "' AND Password = BINARY '" + password +"' ;";
             System.out.println(sql);
             ResultSet rs;
             rs = stmt.executeQuery(sql);
@@ -116,8 +116,10 @@ public class Users {
             setUser_Name(rs.getString(2));
             setPassword(rs.getString(3));
           
-            
+            return true;
             }
+            
+            
             System.out.println(getUser_ID());
             
            
@@ -135,6 +137,8 @@ public class Users {
       {
           System.out.println(e);
       }
+         
+         return false;
     }  
   
     
