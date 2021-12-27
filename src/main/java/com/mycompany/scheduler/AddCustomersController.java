@@ -1,40 +1,73 @@
 package com.mycompany.scheduler;
 
+import com.mycompany.scheduler.Model.Countries;
 import com.mycompany.scheduler.Model.Customers;
+import com.mycompany.scheduler.Model.FirstLevelDivisions;
 import com.mycompany.scheduler.Model.Users;
 import java.io.IOException;
 import java.time.ZoneId;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.StringConverter;
 
 public class AddCustomersController {
     
     @FXML
-    Label customerLBL;
+    Label custIdLBL;
     @FXML
-    TableView<Customers> customerTable;
+    Label CustomerNameLBL;
     @FXML
-    TableColumn customerIDCol;
+    Label addressLBL;
     @FXML
-    TableColumn customerNameCol;
+    Label postalCodeLBL;
     @FXML
-    TableColumn addressCol;
+    Label phoneLBL;  
     @FXML
-    TableColumn postalCodeCol;
+    Label countryLBL;
     @FXML
-    TableColumn PhoneCol;
+    Label divisionLBL;
     
     @FXML
-    TableColumn divIdCol;
+    TextField cusomerIdTF;
+    @FXML
+    TextField customerNameTF;
+    @FXML
+    TextField addressTF;
+    @FXML
+    TextField postalCodeTF;
+    @FXML
+    TextField phoneTF;  
+   
+    @FXML
+    ComboBox<Countries> countryCB;
+    @FXML
+    ComboBox<FirstLevelDivisions> divisionCB;
     
+    @FXML
+    Button cancelBtn;
+    @FXML
+    Button addBtn;
+    
+    
+    
+    @FXML
+    int country_ID;
+ 
+    
+
+  
     @FXML
     String blankPassMessage = "Please Enter a password.";
     
@@ -51,7 +84,8 @@ public class AddCustomersController {
     
     Customers customers = new Customers();
     
-    
+    Countries countries = new Countries();
+    FirstLevelDivisions firstLevelDivision = new FirstLevelDivisions ();
     
     /**
     *Receives the user logged in
@@ -76,58 +110,111 @@ public class AddCustomersController {
     @FXML
     public void initialize(){
         
-        
-        
-        SetTable();
+        cusomerIdTF.setText(Integer.toString(customers.getNewCustomerID()));
+        setCountryBox();
+      
         
     }
-    /**
-    *Sets properties for the Table column
-    *and set the customer observable list
-    *to the table
+     /**
+    *Sets the countries into the country Combo box 
+    *and displays country name 
     * 
     */
     @FXML
-    public void SetTable(){
+    public void setCountryBox(){
+        
+        countryCB.setItems(countries.getAllCountries());
+        
+        countryCB.setConverter(new StringConverter<Countries>(){
+            @Override
+            public String toString(Countries country) {
+                
+                if(country == null){
+                
+                    return null;
+                }
+                else{
+                
+                        return country.getCountry();
+                
+                }
+                
+                
+            }
+
+            @Override
+            public Countries fromString(String arg0) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+          
+        });
+    }
+    
+    @FXML   
+    public void setDivisionBox(){
+        
+        divisionCB.valueProperty().set(null);
         
         
-        customerIDCol.setCellValueFactory(new PropertyValueFactory<>("customer_ID"));
-        customerNameCol.setCellValueFactory(new PropertyValueFactory<>("customer_Name"));
-        addressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
-        postalCodeCol.setCellValueFactory(new PropertyValueFactory<>("postal_Code"));
-        PhoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
-        divIdCol.setCellValueFactory(new PropertyValueFactory<>("division_ID"));
-        customerTable.setItems(customers.getAllCustomers());
+        if(!(countryCB.getValue() == null)){
+            
+            country_ID = countryCB.getValue().getCountry_ID();
+            
+            divisionCB.setItems(FXCollections.observableArrayList(firstLevelDivision.getAllDivisions().stream().filter( d -> d.getCountry_ID() == country_ID).collect(Collectors.toList())));
         
+            
+            
+            
+        
+        }
+        
+        
+        
+        divisionCB.setConverter(new StringConverter<FirstLevelDivisions>(){
+            @Override
+            public String toString(FirstLevelDivisions division) {
+                  
+                if(division == null){
+                
+                    return null;
+                }
+                else{
+                
+                        return division.getDivision();
+                
+                }
+                
+            }
+
+            @Override
+            public FirstLevelDivisions fromString(String arg0) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+           
+
+          
+        });
         
         
         
     }
+    
+    
+  
     /**
-    *Changes back to the home page
+    *Changes back to the Customer home page
     * 
     */
     @FXML
-    public void home() throws IOException{
+    public void cancel() throws IOException{
         
         
         
         App.changePage("home", currentUser);
         
     }
-    /**
-    *changes to the add customer page
-    *
-    * 
-    */
-    @FXML
-    public void viewCustomers() throws IOException{
-    
-        App.changePage("addCustomers", currentUser);
-        
-    }
-    
-    
+ 
     
     
     
