@@ -217,19 +217,6 @@ public class Customers {
         this.division_ID = division_ID;
     }
     
-    //display test method
-    public void display(){
-        System.out.println("Cust_ID: " + customer_ID);
-        System.out.println("Cust_Name " + customer_Name);
-        System.out.println("Address: " + address);
-        System.out.println("Postal_Code: " + postal_Code);
-        System.out.println("Phone: " + phone);
-        System.out.println("Create_Date: " + create_Date);
-        System.out.println("Created_By " + created_by);
-        System.out.println("Last_Update: " + last_update);
-        System.out.println("Last_Updated_By: " + last_Updated_By);
-        System.out.println("Division_ID: " + division_ID);
-    }
     
     //sql methods
     /**********************************************
@@ -338,7 +325,7 @@ public class Customers {
      * @param last_Updated_By the user ID for who updated the customer.
      * @param division_ID the Division ID associated to the customer
     ************************************************/
-    public void addCustomer(String customer_Name, String address, String postal_Code, String phone, String created_by, String last_Updated_By, int division_ID){
+    public void addCustomer(int customer_ID, String customer_Name, String address, String postal_Code, String phone, String created_by, String last_Updated_By, int division_ID){
          try{
            
             Class.forName("com.mysql.jdbc.Driver");
@@ -349,14 +336,15 @@ public class Customers {
            
             //executing statement
             String sql;
-            sql = "insert into customers (customer_Name, address, postal_Code, phone, create_date created_by, last_update last_Updated_By, division_ID)" 
-                    + " values ('" + customer_Name + "','" +
+            sql = "insert into customers (Customer_ID,customer_Name, address, postal_Code, phone, create_date, created_by, last_update, last_Updated_By, division_ID)"
+                    + " values ('" + customer_ID + "','" +
+                    customer_Name + "','" +
                     address + "','" +
                     postal_Code + "','" +
                     phone + "',"+
-                    "'UTC_TIMESTAMP','" +
-                    created_by + "','" +
-                    "'UTC_TIMESTAMP','" +
+                    "UTC_TIMESTAMP,'" +
+                    created_by + "'," +
+                    "UTC_TIMESTAMP,'" +
                     last_Updated_By + "'," +
                     division_ID + "" + 
                      ")";
@@ -377,10 +365,10 @@ public class Customers {
     }
     
     /**********************************************
-     * deletes record from database.
-     * @param customer_ID the id of the customer.
+     * deletes Customer from the database.
+     * @param customer_ID the id of the customer to delete.
     ************************************************/
-    public void deleteDB(int customer_ID){
+    public void deleteCustomer(int customer_ID){
   
         try{
             
@@ -393,7 +381,7 @@ public class Customers {
 
             String sql;
             sql = "DELETE FROM customers WHERE Customer_ID = " + "" + customer_ID + ";";
-            System.out.println(sql);
+            
 
             stmt.execute(sql);  
 
@@ -409,7 +397,7 @@ public class Customers {
     }
     
     /**********************************************
-      * connects to the database to retrieve customers
+      * retrieves all customers from the database 
       * @return the customer list.
     ************************************************/
     public ObservableList<Customers> getAllCustomers(){
@@ -467,6 +455,59 @@ public class Customers {
          
           return allCustomersList; 
      }
+    /**********************************************
+      * retrieves all customers from the database 
+      * @return the customer list.
+    ************************************************/
+    public int getNewCustomerID(){
+         
+         int newCustID = 0;
+         try{
+            
+             
+            Class.forName("com.mysql.jdbc.Driver");
+            
+            
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/client_schedule", "sqlUser", "Passw0rd!");
+            Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            
+
+             
+            String sql = sql = "select * from customers";
+            
+           
+            
+            //executing statement
+            System.out.println(sql);
+            ResultSet rs;
+            rs = stmt.executeQuery(sql);
+         
+            //process through the result set
+            rs.last();
+            
+            
+            newCustID =  rs.getInt(1) + 1;
+           
+          
+            
+            
+           
+            
+            
+            con.close();
+         }
+         
+         catch(SQLException e){
+             System.out.print(e);
+         }
+         catch(Exception e){
+             System.out.println(e);
+         }
+         
+         
+          return newCustID; 
+     }
+    
     
      /**********************************************
       * @return the appointment list.
@@ -479,7 +520,6 @@ public class Customers {
         
         Customers c1 = new Customers();
     
-        c1.getCustomer(2);
         
     }
     
