@@ -59,23 +59,19 @@ public class AddCustomersController {
     Button cancelBtn;
     @FXML
     Button addBtn;
-    
-    
+ 
     
     @FXML
     int country_ID;
  
-    
-
-  
     @FXML
-    String blankPassMessage = "Please Enter a password.";
+    String emptyMessage = "";
     
     @FXML
-    String blankUserMessage = "Please Enter a User.";
+    String emptyCountryDiv = "";
     
     @FXML
-    String incorrectLoginMessage = "Inocrrect Login.";
+    String incorrectNum = "";
     
 
     Alert alert = new Alert(AlertType.WARNING);
@@ -85,6 +81,7 @@ public class AddCustomersController {
     Customers customers = new Customers();
     
     Countries countries = new Countries();
+    
     FirstLevelDivisions firstLevelDivision = new FirstLevelDivisions ();
     
     /**
@@ -104,7 +101,7 @@ public class AddCustomersController {
     
     
     /**
-    *Starts the scene with the table set up
+    *sets the country box and assigns new customerID at start
     * 
     */
     @FXML
@@ -151,6 +148,12 @@ public class AddCustomersController {
         });
     }
     
+    /**
+    *Sets and filters the division Box
+    *to display the division that matches
+    *the selected country
+    * 
+    */
     @FXML   
     public void setDivisionBox(){
         
@@ -162,11 +165,7 @@ public class AddCustomersController {
             country_ID = countryCB.getValue().getCountry_ID();
             
             divisionCB.setItems(FXCollections.observableArrayList(firstLevelDivision.getAllDivisions().stream().filter( d -> d.getCountry_ID() == country_ID).collect(Collectors.toList())));
-        
-            
-            
-            
-        
+                                     
         }
         
         
@@ -200,6 +199,209 @@ public class AddCustomersController {
         
     }
     
+    
+    
+    /**
+    *Checks if data is vaild.
+    * 
+    *@return true if data is vaild.
+    * 
+    */
+    @FXML
+    public Boolean vaildate() throws IOException{
+        
+        emptyMessage = "";
+        incorrectNum = "";
+        emptyCountryDiv = "";
+                
+        
+        if(custIdLBL.getText().isBlank()){
+        
+            if(emptyMessage.isBlank()){
+            
+                emptyMessage = "Customer ID";
+            
+            }
+            else{
+                
+                 emptyMessage =  emptyMessage + ", Customer ID";
+            }
+        }
+            
+        if(customerNameTF.getText().isBlank()){
+        
+            if(emptyMessage.isBlank()){
+            
+                emptyMessage = "Customer Name";
+            
+            }
+            else{
+                
+                 emptyMessage = emptyMessage + ", Customer Name";
+            }     
+        }
+        
+        if(addressTF.getText().isBlank()){
+        
+            if(emptyMessage.isBlank()){
+            
+                emptyMessage = "Address";
+            
+            }
+            
+            else{
+                
+                 emptyMessage = emptyMessage + ", Address";
+            }
+        }
+            
+        if(postalCodeTF.getText().isBlank()){
+        
+            if(emptyMessage.isBlank()){
+            
+            emptyMessage = "Postal Code";
+            
+            }
+            else{
+                
+                 emptyMessage = emptyMessage+ ", Postal Code";
+            }
+            
+                          
+         }
+        if(phoneTF.getText().isBlank()){
+        
+            if(emptyMessage.isBlank()){
+            
+            emptyMessage = "Phone";
+            
+            }
+            else{
+                
+                 emptyMessage = emptyMessage+ ", Phone";
+            }
+        }   
+       
+        
+        
+        
+       
+            if(!phoneTF.getText().matches("[0-9]*") || phoneTF.getText().matches(".*[^a-zA-Z].*")){
+          
+                if(!phoneTF.getText().matches("[0-9-]*") ){
+                incorrectNum = "Please enter a number.";
+            
+            }
+                   
+                   
+                                     
+         }
+        
+        if(countryCB.getValue() == null){
+        
+           
+            
+            emptyCountryDiv = "Please select a Country";
+           
+            
+        }
+        else if(divisionCB.getValue() == null){
+        
+            emptyCountryDiv = "Please select a Division";
+        
+        }
+        
+        if(emptyCountryDiv.isBlank() && incorrectNum.isBlank() && emptyMessage.isBlank()){
+        
+        
+            return true;
+        }
+        
+        else{
+            
+            return false;
+        
+        
+        }
+        
+        
+    }
+    
+   
+ 
+    
+    
+     /**
+    *Displays the alert for invaild information
+    * 
+    */
+    @FXML
+    public void displayAlert() throws IOException{
+        
+        
+        String emptyAlert = "Please enter information for the following fields: " + emptyMessage;
+        
+            if(!emptyMessage.isBlank() && !emptyCountryDiv.isBlank() && !incorrectNum.isBlank()){
+            
+                alert.setContentText(emptyAlert + "\n\n" + emptyCountryDiv + "\n\n" + incorrectNum );
+                alert.setHeight(300);
+            
+            }
+            else if(!emptyMessage.isBlank() && !emptyCountryDiv.isBlank()){
+            
+                alert.setContentText(emptyAlert + "\n\n" + emptyCountryDiv);
+                alert.setHeight(250);
+            
+            }
+            else if(!emptyMessage.isBlank() && !incorrectNum.isBlank()){
+            
+                alert.setContentText(emptyAlert + "\n\n" + incorrectNum );
+                alert.setHeight(250);
+            
+            }
+            else if(!emptyMessage.isBlank()){
+            
+                alert.setContentText(emptyAlert);
+                alert.setHeight(250);
+            
+            }
+            else if(!emptyCountryDiv.isBlank()){
+            
+                alert.setContentText(emptyCountryDiv);
+                alert.setHeight(250);
+            }
+            else if(!incorrectNum.isBlank()){
+                alert.setContentText(incorrectNum);
+                alert.setHeight(250);
+            }
+        
+            alert.showAndWait();
+        
+    }
+    
+    
+     /**
+    *Adds customer to database if data is vaild
+    * 
+    */
+    @FXML
+    public void addCustomer() throws IOException{
+        
+        
+        
+        if(vaildate()){
+        
+        
+            
+        
+        }
+        else{
+        
+            displayAlert();
+        
+        }
+        
+    }
     
   
     /**
