@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.Optional;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -16,11 +17,14 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Duration;
 
 public class CustomersController {
     
     @FXML
     Label customerLBL;
+    @FXML
+     Label deleteLbl;
     @FXML
     TableView<Customers> customerTable;
     @FXML
@@ -118,7 +122,7 @@ public class CustomersController {
         
     }
     /**
-    *changes to the add add customer page
+    *changes to the  add customer page
     *
     * 
     * @throws java.io.IOException
@@ -129,6 +133,28 @@ public class CustomersController {
         App.changePage("addCustomers", currentUser);
         
     }
+    
+    
+     /**
+    *changes to the modify customer page
+    * and sends user and customer objects
+    *
+    * 
+    * @throws java.io.IOException
+    */
+    @FXML
+    public void modifyCustomers() throws IOException{
+        
+        
+        if(customerTable.getSelectionModel().getSelectedItem() != null){
+    
+            App.changePage("modifyCustomer", currentUser, customerTable.getSelectionModel().getSelectedItem());
+        }
+        
+    }
+    
+    
+    
     
      /**
     *removes customer from database after confirming 
@@ -143,10 +169,17 @@ public class CustomersController {
             
             Optional<ButtonType> result = alert.showAndWait();
             if(result.get() == ButtonType.YES){
-             
+                
+                
+                deleteLbl.setText("Deleted " + customerTable.getSelectionModel().getSelectedItem().getCustomer_Name() );
                 customers.deleteCustomer(customerTable.getSelectionModel().getSelectedItem().getCustomer_ID());
                 SetTable();
+                PauseTransition deletedCustMessage = new PauseTransition(Duration.seconds(3));
                 
+                deleteLbl.setVisible(true);
+                deletedCustMessage.setOnFinished( e -> deleteLbl.setVisible(false));
+                deletedCustMessage.play();
+
             }
         
         }
