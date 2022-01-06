@@ -643,9 +643,10 @@ public class Appointments {
     ************************************************/
     public ZonedDateTime convertToLocal(LocalDateTime dateTime){
          
-        ZonedDateTime localTime = dateTime.atZone(ZoneId.systemDefault());
+        ZonedDateTime localTime = dateTime.atZone(ZoneId.of("America/New_York"));
         
-       
+          
+        System.out.println(localTime);
         return(localTime);
         
      }
@@ -658,8 +659,9 @@ public class Appointments {
          
         
         
-       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-       String formattedTime = dateTime.format(format);
+       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z");
+       
+       String formattedTime = dateTime.format(format.withZone(ZoneId.of("America/New_York")));
        
        return formattedTime;
      }
