@@ -3,6 +3,7 @@ package com.mycompany.scheduler;
 import com.mycompany.scheduler.Model.Appointments;
 import com.mycompany.scheduler.Model.Users;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Locale;
 import javafx.fxml.FXML;
@@ -10,10 +11,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Callback;
 
 public class HomeController {
     
@@ -102,6 +105,19 @@ public class HomeController {
     }
     
     
+    /**
+    *Starts the scene with the table set up
+    * 
+    */
+    @FXML
+    public void initialize(){
+        
+        
+        
+        SetTable();
+        
+    }
+    
      /**
     *Sets properties for the Table column
     *and set the customer observable list
@@ -111,19 +127,72 @@ public class HomeController {
     @FXML
     public void SetTable(){
         
+        appointments.getAllAppointments();
         
         appointmentIdCol.setCellValueFactory(new PropertyValueFactory<>("appointment_ID"));
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
         locationCol.setCellValueFactory(new PropertyValueFactory<>("location"));
-        contactCol.setCellValueFactory(new PropertyValueFactory<>("contact"));
+        contactCol.setCellValueFactory(new PropertyValueFactory<>("contact_Name"));
         typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
         startCol.setCellValueFactory(new PropertyValueFactory<>("startTime"));
         endCol.setCellValueFactory(new PropertyValueFactory<>("endTime"));
+      
         customerIDCol.setCellValueFactory(new PropertyValueFactory<>("customer_ID"));
         customerIDCol.setCellValueFactory(new PropertyValueFactory<>("user_ID"));
         
-        appointmentTable.setItems(appointments.getAllAppointments());
+        
+          endCol.setCellFactory(new Callback<TableColumn<Appointments, LocalDateTime>, TableCell<Appointments,LocalDateTime>>(){
+        
+            @Override public TableCell<Appointments,LocalDateTime> call(TableColumn<Appointments,LocalDateTime> timeTableColumn){
+            
+            
+                return new TableCell<Appointments, LocalDateTime>(){
+                
+                    public void updateItem(LocalDateTime dateTime, boolean empty) {
+                        super.updateItem(dateTime, empty);
+                        
+                        if(empty){
+                            
+                            setText("");
+                        
+                        }
+                        else{
+                        
+                            setText(appointments.formatTime(appointments.convertToLocal(dateTime)));
+                        }
+                    }
+                };
+            }
+        
+        });
+          
+        startCol.setCellFactory(new Callback<TableColumn<Appointments, LocalDateTime>, TableCell<Appointments,LocalDateTime>>(){
+        
+            @Override public TableCell<Appointments,LocalDateTime> call(TableColumn<Appointments,LocalDateTime> timeTableColumn){
+            
+            
+                return new TableCell<Appointments, LocalDateTime>(){
+                
+                    public void updateItem(LocalDateTime dateTime, boolean empty) {
+                        super.updateItem(dateTime, empty);
+                        
+                        if(empty){
+                            
+                            setText("");
+                        
+                        }
+                        else{
+                        
+                            setText(appointments.formatTime(appointments.convertToLocal(dateTime)));
+                        }
+                    }
+                };
+            }
+        
+        });
+        
+        appointmentTable.setItems(appointments.getAllAppointmentList());
         
         
         
