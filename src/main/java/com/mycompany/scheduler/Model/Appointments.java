@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import javafx.collections.FXCollections;
@@ -606,7 +608,7 @@ public class Appointments {
             
 
              
-            String sql = sql = "select * from customers";
+            String sql = sql = "select * from appointments";
             
            
             
@@ -638,30 +640,89 @@ public class Appointments {
      }
     
     /**********************************************
-    * retrieves a new unused Appointment ID
-    * @return the customer list.
+    * 
     ************************************************/
-    public ZonedDateTime convertToLocal(LocalDateTime dateTime){
+    public LocalDateTime convertToLocal(LocalDateTime dateTime){
          
-        ZonedDateTime localTime = dateTime.atZone(ZoneId.of("America/New_York"));
+        ZonedDateTime utcTime = dateTime.atZone(ZoneId.of("UTC"));
         
+        
+        
+        
+        ZonedDateTime localZDT = utcTime.withZoneSameInstant(ZoneId.systemDefault());
+        LocalDateTime localTime = localZDT.toLocalDateTime();
           
         System.out.println(localTime);
         return(localTime);
         
      }
     
+    
+    
+    
+    /**********************************************
+    * 
+    ************************************************/
+    public LocalDateTime convertToEST(LocalDateTime dateTime){
+         
+        ZonedDateTime localTime = dateTime.atZone(ZoneId.of(ZoneId.systemDefault().toString()));
+        
+        
+        
+        
+        ZonedDateTime estZDT = localTime.withZoneSameInstant(ZoneId.of("US/Eastern"));
+        LocalDateTime estTime = estZDT.toLocalDateTime();
+          
+        System.out.println(estTime);
+        return(estTime);
+        
+     }
+    
+    
+    /**********************************************
+    * 
+    ************************************************/
+    public Boolean inBusinessHours(LocalTime startTime, LocalTime endTime){
+         
+       LocalTime businessStart = LocalTime.of(8, 0);
+       LocalTime businessEnd = LocalTime.of(22, 0);
+        
+        if(startTime.isBefore(businessStart)||endTime.isBefore(businessStart)){
+        
+            System.out.println("Start: " +startTime +" End:" + endTime + " is before :" + businessStart);
+        
+            return false;
+        }
+        else if(startTime.isAfter(businessEnd)|| endTime.isAfter(businessEnd)){
+        
+            System.out.println("Start: " +startTime +" End:" + endTime + " is after :" + businessEnd);
+            return false;
+        }
+        
+        else{
+            
+            System.out.println("Start: " +startTime +" End:" + endTime + " is not :" + businessStart);
+            
+            System.out.println("Start: " +startTime +" End:" + endTime + " is not after :" + businessEnd);
+        
+        return true;
+        }
+        
+
+     }
+    
+    
     /**********************************************
     * retrieves a new unused Appointment ID
     * @return the customer list.
     ************************************************/
-    public String formatTime(ZonedDateTime dateTime){
+    public String formatTime(LocalDateTime dateTime){
          
         
         
-       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z");
+       DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
        
-       String formattedTime = dateTime.format(format.withZone(ZoneId.of("America/New_York")));
+       String formattedTime = timeFormat.format(dateTime);
        
        return formattedTime;
      }
@@ -674,7 +735,9 @@ public class Appointments {
         Appointments c1 = new Appointments();
     
         c1.getAppointment(2);
-        System.out.print(c1.formatTime(c1.convertToLocal(c1.getStartTime())));
+        LocalDateTime local = c1.convertToLocal(c1.getStartTime());
+        c1.convertToEST(local);
+        
     }
     
 }
