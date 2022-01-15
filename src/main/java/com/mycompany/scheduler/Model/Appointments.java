@@ -678,6 +678,24 @@ public class Appointments {
         
      }
     
+     /**********************************************
+    * 
+    ************************************************/
+    public LocalDateTime convertToUTC(LocalDateTime dateTime){
+         
+        ZonedDateTime localTime = dateTime.atZone(ZoneId.of(ZoneId.systemDefault().toString()));
+        
+        
+        
+        
+        ZonedDateTime utcZDT = localTime.withZoneSameInstant(ZoneId.of("UTC"));
+        LocalDateTime utcTime = utcZDT.toLocalDateTime();
+          
+        System.out.println(utcTime);
+        return(utcTime);
+        
+     }
+    
     
     /**********************************************
     * 
@@ -707,9 +725,50 @@ public class Appointments {
         
         return true;
         }
+    }
+        
         
 
-     }
+    /**
+     *
+     * @param startDateTime
+     * @param endDateTime
+     * @return
+     */
+    public Boolean isOverlapping(LocalDateTime startDateTime, LocalDateTime endDateTime){
+         
+       
+        if(allAppointmentsList.isEmpty()){
+        
+        
+            getAllAppointments();
+        
+        }
+        
+
+        for(Appointments appt : allAppointmentsList){
+
+             System.out.println("checking if " + startDateTime + " is after " + appt.startTime + "and " + endDateTime + "if before " + appt.endTime);
+            if(startDateTime.isAfter(appt.startTime) && endDateTime.isBefore(appt.endTime)){
+                
+                System.out.println("Is Overlapping");
+
+                return true;
+            }
+
+            else if(startDateTime.equals(appt.startTime) && endDateTime.equals(appt.endTime)){
+                
+                System.out.println("Is Overlapping");
+                return true;
+            }
+
+        }
+
+        return false;
+
+    }
+
+     
     
     
     /**********************************************
